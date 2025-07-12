@@ -1,10 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Jargon Bingo – Fun Mode</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src *; media-src 'self'">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <title>Corporate Jargon Bingo</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <h1>🎙️ Corporate Jargon Bingo</h1>
@@ -15,13 +19,13 @@
     <div class="waveform"></div>
     <div class="waveform"></div>
   </div>
-  <button onclick="toggleRecording()">Start / Stop Listening</button>
-  <p id="status">Status: Idle</p>
+  <button id="start-button" onclick="startGame()">▶️ Start Game</button>
+  <div id="timer"></div>
+  <div id="counter">✅ 0/9 phrases matched</div>
+  <div id="error-message"></div>
   <div id="bingo-board"></div>
-  <script>
-    const phraseStyles = {"circle back": {"icon": "\ud83d\udd01", "color": "#FFD54F"}, "synergy": {"icon": "\ud83e\udd1d", "color": "#81C784"}, "move the needle": {"icon": "\ud83d\udcc8", "color": "#64B5F6"}, "deep dive": {"icon": "\ud83e\udde0", "color": "#BA68C8"}, "low-hanging fruit": {"icon": "\ud83c\udf4e", "color": "#E57373"}, "value add": {"icon": "\ud83d\udc8e", "color": "#4DB6AC"}, "alignment": {"icon": "\ud83e\udded", "color": "#FFB74D"}, "touch base": {"icon": "\ud83d\udcde", "color": "#AED581"}, "win-win": {"icon": "\ud83c\udfc6", "color": "#7986CB"}, "leverage": {"icon": "\ud83e\ude9c", "color": "#A1887F"}, "pivot": {"icon": "\ud83d\udd04", "color": "#90A4AE"}, "streamline": {"icon": "\ud83e\uddf9", "color": "#4FC3F7"}, "bandwidth": {"icon": "\ud83d\udcf6", "color": "#9575CD"}, "buy-in": {"icon": "\ud83d\udcb0", "color": "#F06292"}, "drill down": {"icon": "\ud83d\udee0\ufe0f", "color": "#4DB6AC"}, "level set": {"icon": "\ud83d\udccb", "color": "#81D4FA"}};
-  </script>
-  <script src="script.js"></script>
-<script src="confetti.browser.min.js"></script>
+  <div id="summary"></div>
+  <div id="guidelines">🏆 Get BINGO by matching a full row, column, or diagonal of corporate jargon.</div>
+  <script src="js/script.js"></script>
 </body>
 </html>
