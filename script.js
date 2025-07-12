@@ -86,7 +86,7 @@ async function sendToServer(blob) {
   status.textContent = "Status: Transcribing...";
 
   try {
-    const response = await fetch("http://localhost:5000/transcribe", {
+    const response = await fetch("https://jargon-bingo-backend.onrender.com/transcribe", {
       method: "POST",
       body: formData
     });
