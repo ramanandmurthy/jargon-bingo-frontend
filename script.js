@@ -1,6 +1,6 @@
 
 let board = [];
-const boardSize = 4;
+const boardSize = 3;
 let matched = Array(boardSize * boardSize).fill(false);
 
 function shuffle(array) {
@@ -23,7 +23,7 @@ function createBoard() {
     cell.className = "bingo-cell";
     cell.id = `cell-${index}`;
     cell.style.backgroundColor = color;
-    cell.innerHTML = `${icon} <br>${phrase}`;
+    cell.innerHTML = `<div class='checkmark'>✅</div>${icon} <br>${phrase}`;
     boardDiv.appendChild(cell);
   });
 }
@@ -36,17 +36,14 @@ function playSound() {
 function checkWin() {
   const winPatterns = [];
 
-  // Rows
   for (let r = 0; r < boardSize; r++) {
     winPatterns.push([...Array(boardSize).keys()].map(i => r * boardSize + i));
   }
 
-  // Columns
   for (let c = 0; c < boardSize; c++) {
     winPatterns.push([...Array(boardSize).keys()].map(i => i * boardSize + c));
   }
 
-  // Diagonals
   winPatterns.push([...Array(boardSize).keys()].map(i => i * (boardSize + 1)));
   winPatterns.push([...Array(boardSize).keys()].map(i => (i + 1) * (boardSize - 1)));
 
@@ -54,11 +51,7 @@ function checkWin() {
 }
 
 function launchConfetti() {
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.6 }
-  });
+  confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 }
 
 function markPhrase(transcript) {
@@ -69,7 +62,6 @@ function markPhrase(transcript) {
         cell.classList.add("marked");
         matched[i] = true;
         playSound();
-        console.log(`✅ Matched: "${p}"`);
         if (checkWin()) {
           launchConfetti();
           setTimeout(() => alert("🎉 BINGO!"), 200);
@@ -140,4 +132,213 @@ function toggleRecording() {
   }
 }
 
-window.onload = createBoard;
+window.onload = () => {
+  createBoard();
+  const guideline = document.createElement("div");
+  guideline.id = "guidelines";
+  guideline.innerHTML = "🏆 Get BINGO by matching a full row, column, or diagonal of corporate jargon.";
+  document.body.appendChild(guideline);
+};
+
+let timerInterval;
+let timeLeft = 120;
+let matchedPhrases = [];
+
+function updateTimerDisplay() {
+  const timerEl = document.getElementById("timer");
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+  timerEl.textContent = `⏱️ Time Left: ${mins}:${secs < 10 ? "0" : ""}${secs}`;
+}
+
+function endGame() {
+  window.recording = false;
+  clearInterval(timerInterval);
+  document.getElementById("waveform-container").style.visibility = "hidden";
+  document.getElementById("timer").textContent = "";
+  document.getElementById("status").textContent = "⏹ Game Over";
+
+  const summaryDiv = document.getElementById("summary");
+  summaryDiv.innerHTML = "<h2>⏳ Time’s Up!</h2><p>You matched the following phrases:</p>";
+  const ul = document.createElement("ul");
+  matchedPhrases.forEach(phrase => {
+    const li = document.createElement("li");
+    li.textContent = "✅ " + phrase;
+    ul.appendChild(li);
+  });
+  summaryDiv.appendChild(ul);
+  const btn = document.createElement("button");
+  btn.textContent = "🔁 Play Again";
+  btn.onclick = () => location.reload();
+  summaryDiv.appendChild(btn);
+  summaryDiv.style.display = "block";
+}
+
+function startGame() {
+  matchedPhrases = [];
+  timeLeft = 120;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
+  toggleRecording();
+}
+
+function markPhrase(transcript) {
+  board.forEach((p, i) => {
+    if (transcript.toLowerCase().includes(p)) {
+      const cell = document.getElementById(`cell-${i}`);
+      if (!cell.classList.contains("marked")) {
+        cell.classList.add("marked");
+        matched[i] = true;
+        matchedPhrases.push(p);
+        playSound();
+        if (checkWin()) {
+          launchConfetti();
+          setTimeout(() => alert("🎉 BINGO!"), 200);
+        }
+      }
+    }
+  });
+}
+
+let micAccessGranted = false;
+let hasStarted = false;
+
+function showError(message) {
+  const errorDiv = document.getElementById("error-message");
+  errorDiv.textContent = message;
+}
+
+function clearError() {
+  const errorDiv = document.getElementById("error-message");
+  errorDiv.textContent = "";
+}
+
+async function startGame() {
+  if (!hasStarted) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+      });
+      micAccessGranted = true;
+      clearError();
+      document.getElementById("start-button").textContent = "⏹ Stop Game";
+      document.getElementById("start-button").classList.add("stop");
+      hasStarted = true;
+      timeLeft = 120;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+      toggleRecordingWithStream(stream);
+    } catch (err) {
+      micAccessGranted = false;
+      showError("🚫 Microphone access is required to play.");
+    }
+  } else {
+    endGame();
+  }
+}
+
+function toggleRecordingWithStream(stream) {
+  const waveform = document.getElementById("waveform-container");
+  waveform.style.visibility = "visible";
+  window.mediaRecorder = new MediaRecorder(stream);
+  window.audioChunks = [];
+  window.mediaRecorder.ondataavailable = event => window.audioChunks.push(event.data);
+  window.mediaRecorder.onstop = () => {
+    const blob = new Blob(window.audioChunks, { type: "audio/wav" });
+    window.audioChunks = [];
+    sendToServer(blob);
+    if (window.recording) window.mediaRecorder.start();
+    setTimeout(() => {
+      if (window.recording) window.mediaRecorder.stop();
+    }, 5000);
+  };
+  window.recording = true;
+  window.mediaRecorder.start();
+  document.getElementById("status").textContent = "Status: Listening...";
+  setTimeout(() => {
+    if (window.recording) window.mediaRecorder.stop();
+  }, 5000);
+}
+
+function endGame() {
+  window.recording = false;
+  clearInterval(timerInterval);
+  document.getElementById("waveform-container").style.visibility = "hidden";
+  document.getElementById("timer").textContent = "";
+  document.getElementById("status").textContent = "⏹ Game Over";
+  document.getElementById("start-button").textContent = "▶️ Start Game";
+  document.getElementById("start-button").classList.remove("stop");
+  hasStarted = false;
+
+  const summaryDiv = document.getElementById("summary");
+  summaryDiv.innerHTML = "<h2>⏳ Time’s Up!</h2><p>You matched the following phrases:</p>";
+  const ul = document.createElement("ul");
+  matchedPhrases.forEach(phrase => {
+    const li = document.createElement("li");
+    li.textContent = "✅ " + phrase;
+    ul.appendChild(li);
+  });
+  summaryDiv.appendChild(ul);
+  const btn = document.createElement("button");
+  btn.textContent = "🔁 Play Again";
+  btn.onclick = () => location.reload();
+  summaryDiv.appendChild(btn);
+  summaryDiv.style.display = "block";
+}
+
+function updateCounterDisplay() {
+  const counter = document.getElementById("counter");
+  counter.textContent = `✅ ${matchedPhrases.length}/9 phrases matched`;
+}
+
+function showOnboarding() {
+  const div = document.createElement("div");
+  div.id = "onboarding";
+  div.innerHTML = "🎙 Speak during your next meeting. Match buzzwords to win!<br><em>(Allow mic access to play)</em>";
+  document.body.insertBefore(div, document.getElementById("start-button"));
+  setTimeout(() => div.remove(), 5000);
+}
+
+function markPhrase(transcript) {
+  board.forEach((p, i) => {
+    if (transcript.toLowerCase().includes(p)) {
+      const cell = document.getElementById(`cell-${i}`);
+      if (!cell.classList.contains("marked")) {
+        cell.classList.add("marked");
+        matched[i] = true;
+        matchedPhrases.push(p);
+        playSound();
+        updateCounterDisplay();
+        if (checkWin()) {
+          launchConfetti();
+          setTimeout(() => alert("🎉 BINGO!"), 200);
+        }
+      }
+    }
+  });
+}
+
+window.onload = () => {
+  createBoard();
+  showOnboarding();
+  const counter = document.createElement("div");
+  counter.id = "counter";
+  counter.textContent = "✅ 0/9 phrases matched";
+  document.getElementById("timer").after(counter);
+  const guideline = document.createElement("div");
+  guideline.id = "guidelines";
+  guideline.innerHTML = "🏆 Get BINGO by matching a full row, column, or diagonal of corporate jargon.";
+  document.body.appendChild(guideline);
+};

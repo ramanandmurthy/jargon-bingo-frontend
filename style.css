@@ -7,7 +7,7 @@ body {
 }
 #bingo-board {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   max-width: 600px;
   margin: 20px auto;
@@ -17,12 +17,26 @@ body {
   padding: 20px;
   font-size: 1.1em;
   font-weight: bold;
-  color: white;
+  color: #222;
+  
+  position: relative;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+.bingo-cell .checkmark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.2em;
+  display: none;
 }
 .marked {
+  filter: brightness(1.1);
   border: 3px solid #212121;
   box-shadow: 0 0 10px #212121;
-  filter: brightness(1.1);
+  transform: scale(1.03);
+}
+.marked .checkmark {
+  display: block;
 }
 #waveform-container {
   display: flex;
@@ -46,4 +60,120 @@ body {
 @keyframes pulse {
   0%, 100% { height: 20px; }
   50% { height: 40px; }
+}
+
+#guidelines {
+  margin-top: 20px;
+  font-size: 0.95em;
+  color: #444;
+}
+
+#start-button {
+  background-color: #4CAF50;
+  color: #222;
+  padding: 14px 30px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.2s ease;
+}
+#start-button:hover {
+  background-color: #388E3C;
+}
+#timer {
+  font-size: 1.2em;
+  margin-top: 10px;
+}
+#summary {
+  display: none;
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+#summary ul {
+  text-align: left;
+  list-style: none;
+  padding-left: 0;
+}
+#summary button {
+  background-color: #2196F3;
+  color: #222;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  #bingo-board {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .bingo-cell {
+    padding: 12px;
+    font-size: 1em;
+  }
+  #start-button {
+    padding: 12px 24px;
+    font-size: 1em;
+  }
+  #summary {
+    font-size: 0.95em;
+  }
+  #guidelines {
+    font-size: 0.9em;
+    padding: 10px;
+  }
+}
+
+#start-button.stop {
+  background-color: #F44336;
+}
+#error-message {
+  color: #C62828;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.marked {
+  animation: pop 0.3s ease;
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+#counter {
+  font-size: 1em;
+  margin-top: 5px;
+  color: #333;
+}
+#onboarding {
+  background: #fff8e1;
+  border: 1px solid #fdd835;
+  padding: 12px;
+  border-radius: 8px;
+  max-width: 90%;
+  margin: 0 auto 20px;
+  font-size: 0.95em;
+}
+@media (max-width: 500px) {
+  .bingo-cell {
+    padding: 16px;
+    font-size: 1em;
+  }
+  #start-button {
+    font-size: 1em;
+    padding: 12px 24px;
+  }
+  #onboarding {
+    font-size: 0.9em;
+  }
 }
