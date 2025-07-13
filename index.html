@@ -2,30 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src *; media-src 'self'">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="DENY">
   <title>Corporate Jargon Bingo</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta name="description" content="🎙️ Play Corporate Jargon Bingo live during your next meeting. Match buzzwords and shout BINGO!" />
+  <meta name="theme-color" content="#f0f0f0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta property="og:title" content="Corporate Jargon Bingo" />
+  <meta property="og:description" content="🎯 Match corporate buzzwords during meetings and win BINGO!" />
+  <meta property="og:image" content="https://ramanandmurthy.github.io/jargon-bingo-frontend/assets/preview.png" />
+  <meta property="og:url" content="https://ramanandmurthy.github.io/jargon-bingo-frontend/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="css/style.css?v=2" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/favicon.ico" />
 </head>
 <body>
   <h1>🎙️ Corporate Jargon Bingo</h1>
-  <div id="waveform-container">
-    <div class="waveform"></div>
-    <div class="waveform"></div>
-    <div class="waveform"></div>
-    <div class="waveform"></div>
-    <div class="waveform"></div>
-  </div>
-  <button id="start-button" onclick="startGame()">▶️ Start Game</button>
+  <button id="start-button">▶️ Start Game</button>
   <div id="timer"></div>
-  <div id="counter">✅ 0/9 phrases matched</div>
+  <div id="counter"></div>
   <div id="error-message"></div>
-  <div id="bingo-board"></div>
-  <div id="summary"></div>
-  <div id="guidelines">🏆 Get BINGO by matching a full row, column, or diagonal of corporate jargon.</div>
-  <script src="js/script.js"></script>
+  <pre id="transcript-log" style="background:#f4f4f4;padding:10px;margin:10px auto;width:90%;max-width:600px;"></pre>
+  <div id="bingo-board" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px;margin:auto;"></div>
+  <div id="summary" style="max-width:600px;margin:auto;margin-top:20px;"></div>
+  <script src="js/script.js?v=2"></script>
 </body>
 </html>
