@@ -1,7 +1,12 @@
 let phrases = [];
 let matchedPhrases = new Set();
+let recognition;
+let timerInterval;
+let timeLeft = 120; // seconds
+
 const board = document.getElementById("bingo-board");
 const button = document.getElementById("start-button");
+const waveform = document.getElementById("waveform");
 
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
@@ -22,10 +27,12 @@ function createBoard() {
   selected.forEach((phrase) => {
     const cell = document.createElement("div");
     cell.className = "cell";
+    cell.tabIndex = 0;
     cell.textContent = phrase;
     cell.dataset.phrase = phrase;
     board.appendChild(cell);
   });
+  updateCounter();
 }
 async function fetchPhrases() {
   try {
@@ -38,21 +45,43 @@ async function fetchPhrases() {
 function startRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    alert("Speech recognition not supported in this browser.");
+    alert("Your browser does not support speech recognition");
     return;
   }
-  const recognition = new SpeechRecognition();
+  recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = false;
   recognition.lang = 'en-US';
-  document.getElementById("waveform").style.display = "flex";
+
+  waveform.style.display = "flex";
+
   recognition.onresult = (event) => {
     for (let i = event.resultIndex; i < event.results.length; ++i) {
       const transcript = event.results[i][0].transcript;
+      document.getElementById("transcript-log").textContent += transcript + "\n";
       matchAgainstBoard(transcript);
     }
   };
+
+  recognition.onerror = (event) => {
+    console.error("Speech error:", event.error);
+    alert("Speech recognition error: " + event.error);
+    stopGame();
+  };
+
+  recognition.onend = () => {
+    waveform.style.display = "none";
+  };
+
   recognition.start();
+}
+function stopRecognition() {
+  if (recognition) recognition.stop();
+  waveform.style.display = "none";
+}
+function updateCounter() {
+  const counter = document.getElementById("counter");
+  counter.textContent = `✅ ${matchedPhrases.size}/9 phrases matched`;
 }
 function matchAgainstBoard(transcript) {
   const cells = document.querySelectorAll(".cell");
@@ -63,6 +92,8 @@ function matchAgainstBoard(transcript) {
       matchedPhrases.add(phrase);
     }
   });
+  updateCounter();
+
   const combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   for (const combo of combos) {
     if (combo.every(i => cells[i].classList.contains("marked"))) {
@@ -78,8 +109,44 @@ function launchConfetti() {
     if (audio) audio.play();
   }
 }
-button.addEventListener("click", async () => {
-  if (phrases.length === 0) await fetchPhrases();
-  createBoard();
-  startRecognition();
-});
+function startTimer() {
+  timeLeft = 120;
+  const timer = document.getElementById("timer");
+  timer.textContent = "⏳ 2:00";
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const mins = Math.floor(timeLeft / 60);
+    const secs = String(timeLeft % 60).padStart(2, '0');
+    timer.textContent = `⏳ ${mins}:${secs}`;
+    if (timeLeft <= 0) {
+      stopGame();
+    }
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+function showSummary() {
+  const summary = document.getElementById("summary");
+  summary.innerHTML = "<h2>📝 Matched Phrases:</h2><ul>" +
+    Array.from(matchedPhrases).map(p => `<li>${p}</li>`).join("") +
+    "</ul><button onclick='location.reload()'>🔁 Play Again</button>";
+}
+function startGame() {
+  fetchPhrases().then(() => {
+    createBoard();
+    startRecognition();
+    startTimer();
+    document.getElementById("transcript-log").textContent = "";
+    button.textContent = "🛑 Stop Game";
+    button.style.background = "#f44336";
+    button.onclick = stopGame;
+  });
+}
+function stopGame() {
+  stopRecognition();
+  stopTimer();
+  showSummary();
+  button.disabled = true;
+}
+button.onclick = startGame;

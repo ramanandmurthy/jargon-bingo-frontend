@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Corporate Jargon Bingo</title>
   <meta name="description" content="🎙️ Play Corporate Jargon Bingo live during your next meeting. Match buzzwords and shout BINGO!" />
   <meta property="og:title" content="Corporate Jargon Bingo" />
@@ -16,13 +16,13 @@
 </head>
 <body>
   <h1>🎙️ Corporate Jargon Bingo</h1>
-  <button id="start-button">▶️ Start Game</button>
-  <div id="bingo-board" class="board"></div>
-  <div id="waveform" class="waveform-container">
+  <button id="start-button" aria-label="Start Bingo Game">▶️ Start Game</button>
+  <div id="bingo-board" class="board" role="grid" aria-label="Bingo Card"></div>
+  <div id="waveform" class="waveform-container" aria-hidden="true">
     <div class="wave"></div><div class="wave"></div><div class="wave"></div>
   </div>
   <audio id="bingo-sound" src="https://freesound.org/data/previews/337/337049_3232494-lq.mp3" preload="auto"></audio>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+  <script src="js/script.js" defer></script>
 </body>
 </html>
