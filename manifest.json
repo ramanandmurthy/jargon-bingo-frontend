@@ -1,15 +1,1 @@
-{
-  "name": "Corporate Jargon Bingo",
-  "short_name": "JargonBingo",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ff9800",
-  "icons": [
-    {
-      "src": "assets/favicon.ico",
-      "sizes": "32x32",
-      "type": "image/x-icon"
-    }
-  ]
-}
+{}
