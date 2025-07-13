@@ -38,10 +38,12 @@ function createBoard() {
 }
 async function fetchPhrases() {
   try {
-    const res = await fetch("./phrases.json");
+    const res = await fetch("https://raw.githubusercontent.com/ramanandmurthy/jargon-bingo-frontend/main/phrases.json");
     phrases = await res.json();
   } catch {
-    phrases = ["Synergy", "Circle back", "Touch base"];
+    console.warn("CDN fetch failed, falling back to local phrases.json");
+    const res = await fetch("./phrases.json");
+    phrases = await res.json();
   }
 }
 function startRecognition() {
