@@ -1,41 +1,73 @@
-<!-- Feedback Button and Modal -->
-<button id="feedback-button" aria-label="Send Feedback">💬 Send Feedback</button>
-<div id="feedback-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
-  <form id="feedback-form" method="POST" action="https://formspree.io/f/mqalzqlz"
-    style="background:#fff;padding:20px;border-radius:8px;max-width:500px;width:90%;">
-    <h2>We’d love your feedback!</h2>
-    <textarea name="message" required placeholder="Tell us what you think..." rows="5"
-      style="width:100%;padding:10px;margin:10px 0;"></textarea>
-    <button type="submit">Send</button>
-    <button type="button" onclick="document.getElementById('feedback-modal').style.display='none'">Cancel</button>
-  </form>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Corporate Jargon Bingo</title>
+  <meta name="description" content="🎙️ Play Corporate Jargon Bingo live during your next meeting. Match buzzwords and shout BINGO!" />
+  <meta property="og:title" content="Corporate Jargon Bingo" />
+  <meta property="og:description" content="🎯 Match corporate buzzwords during meetings and win BINGO!" />
+  <meta property="og:image" content="assets/preview.png" />
+  <meta property="og:url" content="https://ramanandmurthy.github.io/jargon-bingo-frontend/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/favicon.ico" />
+</head>
+<body>
+  <h1>🎙️ Corporate Jargon Bingo</h1>
+  <button id="start-button" aria-label="Start Bingo Game">▶️ Start Game</button>
+  <div id="timer"></div>
+  <div id="counter"></div>
+  <div id="bingo-board" class="board" role="grid" aria-label="Bingo Card"></div>
+  <div id="waveform" class="waveform-container" aria-hidden="true">
+    <div class="wave"></div><div class="wave"></div><div class="wave"></div>
+  </div>
+  <pre id="transcript-log"></pre>
+  <div id="summary"></div>
+  <audio id="bingo-sound" src="https://freesound.org/data/previews/337/337049_3232494-lq.mp3" preload="auto"></audio>
 
-<script>
-document.getElementById("feedback-button").onclick = function() {
-  document.getElementById("feedback-modal").style.display = "flex";
-};
-document.getElementById("feedback-form").onsubmit = function (e) {
-  e.preventDefault();
-  const form = e.target;
-  const data = new FormData(form);
-  fetch(form.action, {
-    method: "POST",
-    body: data,
-    headers: { 'Accept': 'application/json' }
-  }).then(response => {
-    if (response.ok) {
-      alert("Thanks for your feedback!");
-      form.reset();
-      document.getElementById("feedback-modal").style.display = "none";
-    } else {
-      alert("Oops! Something went wrong. Try again later.");
-    }
-  }).catch(() => {
-    alert("Oops! Something went wrong. Try again later.");
-  });
-};
-</script>
+  <!-- Feedback Button and Modal -->
+  <button id="feedback-button" aria-label="Send Feedback">💬 Send Feedback</button>
+  <div id="feedback-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
+    <form id="feedback-form" method="POST" action="https://formspree.io/f/mqalzqlz"
+      style="background:#fff;padding:20px;border-radius:8px;max-width:500px;width:90%;">
+      <h2>We’d love your feedback!</h2>
+      <textarea name="message" required placeholder="Tell us what you think..." rows="5"
+        style="width:100%;padding:10px;margin:10px 0;"></textarea>
+      <button type="submit">Send</button>
+      <button type="button" onclick="document.getElementById('feedback-modal').style.display='none'">Cancel</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("feedback-button").onclick = function() {
+      document.getElementById("feedback-modal").style.display = "flex";
+    };
+    document.getElementById("feedback-form").onsubmit = function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
+      fetch(form.action, {
+        method: "POST",
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(response => {
+        if (response.ok) {
+          alert("Thanks for your feedback!");
+          form.reset();
+          document.getElementById("feedback-modal").style.display = "none";
+        } else {
+          alert("Oops! Something went wrong. Try again later.");
+        }
+      }).catch(() => {
+        alert("Oops! Something went wrong. Try again later.");
+      });
+    };
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+  <script src="js/script.js" defer></script>
 </body>
 </html>
