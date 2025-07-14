@@ -71,11 +71,9 @@
       document.getElementById("intro-screen").style.display = "none";
       document.getElementById("game-ui").style.display = "block";
     };
-
     document.getElementById("feedback-button").onclick = function () {
       document.getElementById("feedback-modal").style.display = "flex";
     };
-
     document.getElementById("feedback-form").onsubmit = function (e) {
       e.preventDefault();
       const form = e.target;

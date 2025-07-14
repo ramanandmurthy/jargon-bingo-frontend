@@ -1,4 +1,3 @@
-
 let phrases = [];
 let matchedPhrases = new Set();
 let recognition;
@@ -18,57 +17,28 @@ const container = document.getElementById("category-options");
 
 const STOPWORDS = ["the", "a", "an", "and", "to", "of", "in", "on", "it", "is", "for"];
 const TOKEN_WEIGHTS = {
-  "synergy": 2.0,
-  "leverage": 2.0,
-  "alignment": 1.5,
-  "bandwidth": 1.5,
-  "circle": 1.2,
-  "back": 1.2
+  "synergy": 2.0, "leverage": 2.0, "alignment": 1.5,
+  "bandwidth": 1.5, "circle": 1.2, "back": 1.2
 };
 
 const categories = {
   "General": {
-    icon: "🎯",
-    label: "I just love Bingo",
+    icon: "🎯", label: "I just love Bingo",
     preview: ["Synergy", "Circle back", "Touch base"],
     theme: { bg: "#fff8e1", accent: "#ff9800" }
   },
   "KPIs": {
-    icon: "📊",
-    label: "I’m a Data-Driven PM",
+    icon: "📊", label: "I’m a Data-Driven PM",
     preview: ["ARR", "Churn rate", "Activation metric"],
     theme: { bg: "#e3f2fd", accent: "#2196f3" }
   },
   "Agile": {
-    icon: "🌀",
-    label: "I work in Sprints",
+    icon: "🌀", label: "I work in Sprints",
     preview: ["Scrum", "Retrospective", "Burndown chart"],
     theme: { bg: "#ede7f6", accent: "#673ab7" }
   },
   "Monetization": {
-    icon: "💰",
-    label: "I care about Revenue",
-    preview: ["ARPDAU", "Conversion rate", "Paywall"],
-    theme: { bg: "#fce4ec", accent: "#e91e63" }
-  }
-};
-  "General": {
-    label: "🎯 I just love Bingo",
-    preview: ["Synergy", "Circle back", "Touch base"],
-    theme: { bg: "#fff8e1", accent: "#ff9800" }
-  },
-  "KPIs": {
-    label: "📊 I’m a Data-Driven PM",
-    preview: ["ARR", "Churn rate", "Activation metric"],
-    theme: { bg: "#e3f2fd", accent: "#2196f3" }
-  },
-  "Agile": {
-    label: "🌀 I work in Sprints",
-    preview: ["Scrum", "Retrospective", "Burndown chart"],
-    theme: { bg: "#ede7f6", accent: "#673ab7" }
-  },
-  "Monetization": {
-    label: "💰 I care about Revenue",
+    icon: "💰", label: "I care about Revenue",
     preview: ["ARPDAU", "Conversion rate", "Paywall"],
     theme: { bg: "#fce4ec", accent: "#e91e63" }
   }
@@ -81,38 +51,40 @@ function applyTheme(cat) {
   document.documentElement.style.setProperty('--accent-color', theme.accent);
 }
 
-Object.keys(categories).forEach(cat => {
-  const btn = document.createElement("button");
-  btn.innerHTML = `<span style='font-size:20px;'>${categories[cat].icon}</span><br><span>${categories[cat].label}</span>`;
-  btn.style.padding = "10px";
-  btn.style.fontSize = "14px";
-  btn.style.borderRadius = "8px";
-  btn.style.border = "2px solid transparent";
-  btn.style.background = "#fff";
-  btn.style.cursor = "pointer";
-  btn.onmouseenter = () => {
-    preview.innerHTML = "<strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
-  };
-  btn.onclick = () => {
-    selectedCategory = cat;
-    preview.innerHTML = "<strong>Selected:</strong> " + categories[cat].label + "<br><strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
-    document.querySelectorAll("#category-options button").forEach(b => b.style.border = "2px solid transparent");
-    btn.style.border = `2px solid ${categories[cat].theme.accent}`;
-    applyTheme(cat);
-  };
-  container.appendChild(btn);
-});
-
-document.getElementById("surprise-me").onclick = () => {
-  const keys = Object.keys(categories);
-  const random = keys[Math.floor(Math.random() * keys.length)];
-  selectedCategory = random;
-  preview.innerHTML = "<strong>Selected:</strong> " + categories[random].label + "<br><strong>Sample phrases:</strong> " + categories[random].preview.join(", ");
-  document.querySelectorAll("#category-options button").forEach((b, i) => {
-    b.style.border = keys[i] === random ? `2px solid ${categories[random].theme.accent}` : "2px solid transparent";
+function renderPersonaOptions() {
+  Object.keys(categories).forEach(cat => {
+    const btn = document.createElement("button");
+    btn.innerHTML = `<span style='font-size:20px;'>${categories[cat].icon}</span><br><span>${categories[cat].label}</span>`;
+    btn.style.padding = "10px";
+    btn.style.fontSize = "14px";
+    btn.style.borderRadius = "8px";
+    btn.style.border = "2px solid transparent";
+    btn.style.background = "#fff";
+    btn.style.cursor = "pointer";
+    btn.onmouseenter = () => {
+      preview.innerHTML = "<strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
+    };
+    btn.onclick = () => {
+      selectedCategory = cat;
+      preview.innerHTML = "<strong>Selected:</strong> " + categories[cat].label + "<br><strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
+      document.querySelectorAll("#category-options button").forEach(b => b.style.border = "2px solid transparent");
+      btn.style.border = `2px solid ${categories[cat].theme.accent}`;
+      applyTheme(cat);
+    };
+    container.appendChild(btn);
   });
-  applyTheme(random);
-};
+
+  document.getElementById("surprise-me").onclick = () => {
+    const keys = Object.keys(categories);
+    const random = keys[Math.floor(Math.random() * keys.length)];
+    selectedCategory = random;
+    preview.innerHTML = "<strong>Selected:</strong> " + categories[random].label + "<br><strong>Sample phrases:</strong> " + categories[random].preview.join(", ");
+    document.querySelectorAll("#category-options button").forEach((b, i) => {
+      b.style.border = keys[i] === random ? `2px solid ${categories[random].theme.accent}` : "2px solid transparent";
+    });
+    applyTheme(random);
+  };
+}
 
 function shuffle(array) {
   return array.sort(() => Math.random() - 0.5);
@@ -273,4 +245,5 @@ function stopGame() {
   button.disabled = true;
 }
 
+renderPersonaOptions();
 button.onclick = startGame;
