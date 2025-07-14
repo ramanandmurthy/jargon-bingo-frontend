@@ -28,6 +28,31 @@ const TOKEN_WEIGHTS = {
 
 const categories = {
   "General": {
+    icon: "🎯",
+    label: "I just love Bingo",
+    preview: ["Synergy", "Circle back", "Touch base"],
+    theme: { bg: "#fff8e1", accent: "#ff9800" }
+  },
+  "KPIs": {
+    icon: "📊",
+    label: "I’m a Data-Driven PM",
+    preview: ["ARR", "Churn rate", "Activation metric"],
+    theme: { bg: "#e3f2fd", accent: "#2196f3" }
+  },
+  "Agile": {
+    icon: "🌀",
+    label: "I work in Sprints",
+    preview: ["Scrum", "Retrospective", "Burndown chart"],
+    theme: { bg: "#ede7f6", accent: "#673ab7" }
+  },
+  "Monetization": {
+    icon: "💰",
+    label: "I care about Revenue",
+    preview: ["ARPDAU", "Conversion rate", "Paywall"],
+    theme: { bg: "#fce4ec", accent: "#e91e63" }
+  }
+};
+  "General": {
     label: "🎯 I just love Bingo",
     preview: ["Synergy", "Circle back", "Touch base"],
     theme: { bg: "#fff8e1", accent: "#ff9800" }
@@ -58,7 +83,7 @@ function applyTheme(cat) {
 
 Object.keys(categories).forEach(cat => {
   const btn = document.createElement("button");
-  btn.innerHTML = `<span style='font-size:20px;'>${categories[cat].label.split(" ")[0]}</span><br><span>${categories[cat].label.split(" ").slice(1).join(" ")}</span>`;
+  btn.innerHTML = `<span style='font-size:20px;'>${categories[cat].icon}</span><br><span>${categories[cat].label}</span>`;
   btn.style.padding = "10px";
   btn.style.fontSize = "14px";
   btn.style.borderRadius = "8px";
