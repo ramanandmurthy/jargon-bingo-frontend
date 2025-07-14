@@ -1,0 +1,22 @@
+{
+  "General": [
+    "Synergy",
+    "Circle back",
+    "Touch base"
+  ],
+  "KPIs": [
+    "ARR",
+    "Churn rate",
+    "Activation metric"
+  ],
+  "Agile": [
+    "Scrum",
+    "Retrospective",
+    "Burndown chart"
+  ],
+  "Monetization": [
+    "ARPDAU",
+    "Conversion rate",
+    "Paywall"
+  ]
+}

@@ -1,3 +1,4 @@
+
 let phrases = [];
 let matchedPhrases = new Set();
 let recognition;
@@ -29,24 +30,17 @@ function shuffle(array) {
 function normalize(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
-
 function getWeight(token) {
   if (STOPWORDS.includes(token)) return 0.5;
   return TOKEN_WEIGHTS[token] || 1.0;
 }
-
 function phraseMatch(input, phrase) {
   const inputTokens = normalize(input).split(" ");
   const variants = phraseAliases[phrase] || [phrase];
-
   return variants.some(v => {
     const targetTokens = normalize(v).split(" ");
     const totalWeight = targetTokens.reduce((sum, t) => sum + getWeight(t), 0);
-    const matchedWeight = targetTokens
-      .filter(t => inputTokens.includes(t))
-      .reduce((sum, t) => sum + getWeight(t), 0);
-
-    // Auto-adjust threshold: short phrases are stricter
+    const matchedWeight = targetTokens.filter(t => inputTokens.includes(t)).reduce((sum, t) => sum + getWeight(t), 0);
     const threshold = targetTokens.length <= 2 ? 0.8 : 0.6;
     return matchedWeight >= totalWeight * threshold;
   });
@@ -70,10 +64,11 @@ function createBoard() {
 }
 
 async function fetchPhrases() {
-  const phraseRes = await fetch("https://raw.githubusercontent.com/ramanandmurthy/jargon-bingo-frontend/main/phrases.json");
-  phrases = await phraseRes.json();
-
-  const aliasRes = await fetch("./aliases.json");
+  const catRes = await fetch("categories.json");
+  const categories = await catRes.json();
+  const selectedCategory = window.getSelectedCategory?.() || "General";
+  phrases = categories[selectedCategory] || categories["General"];
+  const aliasRes = await fetch("aliases.json");
   phraseAliases = await aliasRes.json();
 }
 
@@ -83,13 +78,11 @@ function startRecognition() {
     alert("Your browser does not support speech recognition");
     return;
   }
-
   recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = false;
   recognition.lang = 'en-US';
   waveform.style.display = "flex";
-
   recognition.onresult = (event) => {
     waveform.classList.add("active");
     for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -103,17 +96,14 @@ function startRecognition() {
     }, 2000);
     setTimeout(() => waveform.classList.remove("active"), 500);
   };
-
   recognition.onerror = (event) => {
     console.error("Speech error:", event.error);
     alert("Speech recognition error: " + event.error);
     stopGame();
   };
-
   recognition.onend = () => {
     waveform.style.display = "none";
   };
-
   recognition.start();
 }
 
@@ -138,7 +128,6 @@ function matchAgainstBoard(transcript) {
     }
   });
   updateCounter();
-
   const combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   for (const combo of combos) {
     if (!bingoTriggered && combo.every(i => cells[i].classList.contains("marked"))) {
