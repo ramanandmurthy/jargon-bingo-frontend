@@ -11,140 +11,71 @@
   <meta property="og:url" content="https://ramanandmurthy.github.io/jargon-bingo-frontend/" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/favicon.ico" />
-<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
 <body>
-  
-<div id="intro-screen" style="text-align:center;max-width:600px;margin:40px auto;display:block;">
-  <h2>Welcome to Corporate Jargon Bingo 🎯</h2>
-  <p style="font-size:18px;">Tired of hearing “circle back” and “synergy” in every meeting? Now you can win Bingo for it!</p>
-  <h3>How to Play</h3>
-  <ol style="text-align:left;display:inline-block;font-size:16px;">
-    <li>Select who you are today (e.g., PM, Analyst)</li>
-    <li>Start the round and let the game listen in</li>
-    <li>Match buzzwords on your bingo card</li>
-    <li>Get 3 in a row and win 🎉</li>
-  </ol>
-  <h4 style="margin-top:20px;">Sample Phrases:</h4>
-  <p style="font-family:monospace;">“Circle back”, “Low-hanging fruit”, “Bandwidth”</p>
-  <button id="enter-game" style="margin-top:20px;padding:12px 24px;font-size:18px;">🎮 Let's Play</button>
-</div>
-<div id="game-ui" style="display:none;"><h1>🎙️ Corporate Jargon Bingo</h1>
-  <div id="persona-selector">
-    <h3>Who are you today?</h3>
-    <div id="category-options" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:10px;"></div>
-    <button id="surprise-me">🎲 Surprise Me</button>
-    <div id="category-preview" style="margin-top:10px;color:#555;"></div>
+  <div id="intro-screen" style="text-align:center;max-width:600px;margin:40px auto;display:block;">
+    <h2>Welcome to Corporate Jargon Bingo 🎯</h2>
+    <p style="font-size:18px;">Tired of hearing “circle back” and “synergy” in every meeting? Now you can win Bingo for it!</p>
+    <h3>How to Play</h3>
+    <ol style="text-align:left;display:inline-block;font-size:16px;">
+      <li>Select who you are today (e.g., PM, Analyst)</li>
+      <li>Start the round and let the game listen in</li>
+      <li>Match buzzwords on your bingo card</li>
+      <li>Get 3 in a row and win 🎉</li>
+    </ol>
+    <h4 style="margin-top:20px;">Sample Phrases:</h4>
+    <p style="font-family:monospace;">“Circle back”, “Low-hanging fruit”, “Bandwidth”</p>
+    <button id="enter-game" style="margin-top:20px;padding:12px 24px;font-size:18px;">🎮 Let's Play</button>
   </div>
-  <br/>
-  <button id="start-button" aria-label="Start Bingo Game">▶️ Start Game</button>
-  <div id="timer"></div>
-  <div id="counter"></div>
-  <div id="bingo-board" class="board" role="grid" aria-label="Bingo Card"></div>
-  <div id="waveform" class="waveform-container" aria-hidden="true">
-    <div class="wave"></div><div class="wave"></div><div class="wave"></div>
-  </div>
-  <pre id="transcript-log"></pre>
-  <div id="summary"></div>
-  <audio id="bingo-sound" src="https://freesound.org/data/previews/337/337049_3232494-lq.mp3" preload="auto"></audio>
 
-  <!-- Feedback Button and Modal -->
-  <button id="feedback-button" aria-label="Send Feedback">💬 Send Feedback</button>
-  <div id="feedback-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
-    <form id="feedback-form" method="POST" action="https://formspree.io/f/mqalzqlz"
-      style="background:#fff;padding:20px;border-radius:8px;max-width:500px;width:90%;">
-      <h2>We’d love your feedback!</h2>
-      <textarea name="message" required placeholder="Tell us what you think..." rows="5"
-        style="width:100%;padding:10px;margin:10px 0;"></textarea>
-      <button type="submit">Send</button>
-      <button type="button" onclick="document.getElementById('feedback-modal').style.display='none'">Cancel</button>
-    </form>
+  <div id="game-ui" style="display:none;">
+    <h1>🎙️ Corporate Jargon Bingo</h1>
+    <div id="persona-selector">
+      <h3>Who are you today?</h3>
+      <div id="category-options" class="persona-grid"></div>
+      <button id="surprise-me">🎲 Surprise Me</button>
+      <div id="category-preview" style="margin-top:10px;color:#555;"></div>
+    </div>
+    <br/>
+    <button id="start-button" aria-label="Start Bingo Game">▶️ Start Game</button>
+    <div id="timer"></div>
+    <div id="counter"></div>
+    <div id="bingo-board" class="board" role="grid" aria-label="Bingo Card"></div>
+    <div id="waveform" class="waveform-container" aria-hidden="true">
+      <div class="wave"></div><div class="wave"></div><div class="wave"></div>
+    </div>
+    <pre id="transcript-log"></pre>
+    <div id="summary"></div>
+    <audio id="bingo-sound" src="https://freesound.org/data/previews/337/337049_3232494-lq.mp3" preload="auto"></audio>
+    <button id="feedback-button" aria-label="Send Feedback">💬 Send Feedback</button>
+    <div id="feedback-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
+      <form id="feedback-form" method="POST" action="https://formspree.io/f/mqalzqlz"
+        style="background:#fff;padding:20px;border-radius:8px;max-width:500px;width:90%;">
+        <h2>We’d love your feedback!</h2>
+        <textarea name="message" required placeholder="Tell us what you think..." rows="5"
+          style="width:100%;padding:10px;margin:10px 0;"></textarea>
+        <button type="submit">Send</button>
+        <button type="button" onclick="document.getElementById('feedback-modal').style.display='none'">Cancel</button>
+      </form>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
   <script src="js/script.js" defer></script>
-
   <script>
-    const categories = {
-  "General": {
-    label: "🎯 I just love Bingo",
-    preview: ["Synergy", "Circle back", "Touch base"],
-    theme: { bg: "#fff8e1", accent: "#ff9800" }
-  },
-  "KPIs": {
-    label: "📊 I’m a Data-Driven PM",
-    preview: ["ARR", "Churn rate", "Activation metric"],
-    theme: { bg: "#e3f2fd", accent: "#2196f3" }
-  },
-  "Agile": {
-    label: "🌀 I work in Sprints",
-    preview: ["Scrum", "Retrospective", "Burndown chart"],
-    theme: { bg: "#ede7f6", accent: "#673ab7" }
-  },
-  "Monetization": {
-    label: "💰 I care about Revenue",
-    preview: ["ARPDAU", "Conversion rate", "Paywall"],
-    theme: { bg: "#fce4ec", accent: "#e91e63" }
-  }
-};
-
-function applyTheme(cat) {
-  const theme = categories[cat]?.theme;
-  if (!theme) return;
-  document.body.style.backgroundColor = theme.bg;
-  document.documentElement.style.setProperty('--accent-color', theme.accent);
-}
-      "General": { label: "🎯 I just love Bingo", preview: ["Synergy", "Circle back", "Touch base"] },
-      "KPIs": { label: "📊 I’m a Data-Driven PM", preview: ["ARR", "Churn rate", "Activation metric"] },
-      "Agile": { label: "🌀 I work in Sprints", preview: ["Scrum", "Retrospective", "Burndown chart"] },
-      "Monetization": { label: "💰 I care about Revenue", preview: ["ARPDAU", "Conversion rate", "Paywall"] }
-    };
-    const container = document.getElementById("category-options");
-    const preview = document.getElementById("category-preview");
-    let selectedCategory = "General";
-
-    Object.keys(categories).forEach(cat => {
-      const btn = document.createElement("button");
-      btn.innerHTML = `<span style='font-size:20px;'>${categories[cat].label.split(" ")[0]}</span><br><span>${categories[cat].label.split(" ").slice(1).join(" ")}</span>`;
-      btn.style.padding = "10px";
-      btn.style.fontSize = "14px";
-      btn.style.borderRadius = "8px";
-      btn.style.border = "2px solid transparent";
-      btn.style.background = "#fff";
-      btn.style.cursor = "pointer";
-      btn.onmouseenter = () => {
-        preview.innerHTML = "<strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
-      };
-      btn.onclick = () => {
-        selectedCategory = cat;
-        preview.innerHTML = "<strong>Selected:</strong> " + categories[cat].label + "<br><strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
-        document.querySelectorAll("#category-options button").forEach(b => b.style.border = "2px solid transparent");
-        btn.style.border = `2px solid ${categories[cat].theme.accent}`;
-applyTheme(cat);
-      };
-      container.appendChild(btn);
-    });
-
-    document.getElementById("surprise-me").onclick = () => {
-      const keys = Object.keys(categories);
-      const random = keys[Math.floor(Math.random() * keys.length)];
-      selectedCategory = random;
-applyTheme(random);
-      preview.innerHTML = "<strong>Selected:</strong> " + categories[random].label + "<br><strong>Sample phrases:</strong> " + categories[random].preview.join(", ");
-      document.querySelectorAll("#category-options button").forEach((b, i) => {
-        b.style.border = keys[i] === random ? "2px solid #ff9800" : "2px solid transparent";
-      });
+    document.getElementById("enter-game").onclick = function () {
+      document.getElementById("intro-screen").style.display = "none";
+      document.getElementById("game-ui").style.display = "block";
     };
 
-    window.getSelectedCategory = () => selectedCategory;
-
-    document.getElementById("feedback-button").onclick = function() {
+    document.getElementById("feedback-button").onclick = function () {
       document.getElementById("feedback-modal").style.display = "flex";
     };
+
     document.getElementById("feedback-form").onsubmit = function (e) {
       e.preventDefault();
       const form = e.target;
@@ -166,13 +97,5 @@ applyTheme(random);
       });
     };
   </script>
-
-<script>
-  document.getElementById("enter-game").onclick = function() {
-    document.getElementById("intro-screen").style.display = "none";
-    document.getElementById("game-ui").style.display = "block";
-  };
-</script>
-
 </body>
 </html>

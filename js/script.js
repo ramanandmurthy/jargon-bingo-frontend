@@ -8,13 +8,15 @@ let timeLeft = 120;
 let bingoTriggered = false;
 let transcriptLog = "";
 let phraseAliases = {};
+let selectedCategory = "General";
 
 const board = document.getElementById("bingo-board");
 const button = document.getElementById("start-button");
 const waveform = document.getElementById("waveform");
+const preview = document.getElementById("category-preview");
+const container = document.getElementById("category-options");
 
 const STOPWORDS = ["the", "a", "an", "and", "to", "of", "in", "on", "it", "is", "for"];
-
 const TOKEN_WEIGHTS = {
   "synergy": 2.0,
   "leverage": 2.0,
@@ -22,6 +24,69 @@ const TOKEN_WEIGHTS = {
   "bandwidth": 1.5,
   "circle": 1.2,
   "back": 1.2
+};
+
+const categories = {
+  "General": {
+    label: "🎯 I just love Bingo",
+    preview: ["Synergy", "Circle back", "Touch base"],
+    theme: { bg: "#fff8e1", accent: "#ff9800" }
+  },
+  "KPIs": {
+    label: "📊 I’m a Data-Driven PM",
+    preview: ["ARR", "Churn rate", "Activation metric"],
+    theme: { bg: "#e3f2fd", accent: "#2196f3" }
+  },
+  "Agile": {
+    label: "🌀 I work in Sprints",
+    preview: ["Scrum", "Retrospective", "Burndown chart"],
+    theme: { bg: "#ede7f6", accent: "#673ab7" }
+  },
+  "Monetization": {
+    label: "💰 I care about Revenue",
+    preview: ["ARPDAU", "Conversion rate", "Paywall"],
+    theme: { bg: "#fce4ec", accent: "#e91e63" }
+  }
+};
+
+function applyTheme(cat) {
+  const theme = categories[cat]?.theme;
+  if (!theme) return;
+  document.body.style.backgroundColor = theme.bg;
+  document.documentElement.style.setProperty('--accent-color', theme.accent);
+}
+
+Object.keys(categories).forEach(cat => {
+  const btn = document.createElement("button");
+  btn.innerHTML = `<span style='font-size:20px;'>${categories[cat].label.split(" ")[0]}</span><br><span>${categories[cat].label.split(" ").slice(1).join(" ")}</span>`;
+  btn.style.padding = "10px";
+  btn.style.fontSize = "14px";
+  btn.style.borderRadius = "8px";
+  btn.style.border = "2px solid transparent";
+  btn.style.background = "#fff";
+  btn.style.cursor = "pointer";
+  btn.onmouseenter = () => {
+    preview.innerHTML = "<strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
+  };
+  btn.onclick = () => {
+    selectedCategory = cat;
+    preview.innerHTML = "<strong>Selected:</strong> " + categories[cat].label + "<br><strong>Sample phrases:</strong> " + categories[cat].preview.join(", ");
+    document.querySelectorAll("#category-options button").forEach(b => b.style.border = "2px solid transparent");
+    btn.style.border = `2px solid ${categories[cat].theme.accent}`;
+    applyTheme(cat);
+  };
+  container.appendChild(btn);
+});
+
+document.getElementById("surprise-me").onclick = () => {
+  const keys = Object.keys(categories);
+  const random = keys[Math.floor(Math.random() * keys.length)];
+  selectedCategory = random;
+  preview.innerHTML = "<strong>Selected:</strong> " + categories[random].label + "<br><strong>Sample phrases:</strong> " + categories[random].preview.join(", ");
+  document.querySelectorAll("#category-options button").forEach((b, i) => {
+    b.style.border = keys[i] === random ? `2px solid ${categories[random].theme.accent}` : "2px solid transparent";
+  });
+  applyTheme(random);
 };
 
 function shuffle(array) {
@@ -46,6 +111,14 @@ function phraseMatch(input, phrase) {
   });
 }
 
+async function fetchPhrases() {
+  const catRes = await fetch("categories.json");
+  const categoriesJSON = await catRes.json();
+  phrases = categoriesJSON[selectedCategory] || categoriesJSON["General"];
+  const aliasRes = await fetch("aliases.json");
+  phraseAliases = await aliasRes.json();
+}
+
 function createBoard() {
   board.innerHTML = '';
   matchedPhrases.clear();
@@ -61,56 +134,6 @@ function createBoard() {
     board.appendChild(cell);
   });
   updateCounter();
-}
-
-async function fetchPhrases() {
-  const catRes = await fetch("categories.json");
-  const categories = await catRes.json();
-  const selectedCategory = window.getSelectedCategory?.() || "General";
-  phrases = categories[selectedCategory] || categories["General"];
-  const aliasRes = await fetch("aliases.json");
-  phraseAliases = await aliasRes.json();
-}
-
-function startRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Your browser does not support speech recognition");
-    return;
-  }
-  recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = false;
-  recognition.lang = 'en-US';
-  waveform.style.display = "flex";
-  recognition.onresult = (event) => {
-    waveform.classList.add("active");
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      const transcript = event.results[i][0].transcript;
-      transcriptLog += " " + transcript;
-      document.getElementById("transcript-log").textContent += transcript + "\n";
-    }
-    if (scanTimeout) clearTimeout(scanTimeout);
-    scanTimeout = setTimeout(() => {
-      matchAgainstBoard(transcriptLog);
-    }, 2000);
-    setTimeout(() => waveform.classList.remove("active"), 500);
-  };
-  recognition.onerror = (event) => {
-    console.error("Speech error:", event.error);
-    alert("Speech recognition error: " + event.error);
-    stopGame();
-  };
-  recognition.onend = () => {
-    waveform.style.display = "none";
-  };
-  recognition.start();
-}
-
-function stopRecognition() {
-  if (recognition) recognition.stop();
-  if (scanTimeout) clearTimeout(scanTimeout);
-  waveform.style.display = "none";
 }
 
 function updateCounter() {
@@ -137,6 +160,43 @@ function matchAgainstBoard(transcript) {
   }
 }
 
+function startRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Speech recognition not supported in this browser.");
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+  waveform.style.display = "flex";
+  recognition.onresult = (event) => {
+    waveform.classList.add("active");
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      const transcript = event.results[i][0].transcript;
+      transcriptLog += " " + transcript;
+      document.getElementById("transcript-log").textContent += transcript + "\n";
+    }
+    if (scanTimeout) clearTimeout(scanTimeout);
+    scanTimeout = setTimeout(() => matchAgainstBoard(transcriptLog), 2000);
+    setTimeout(() => waveform.classList.remove("active"), 500);
+  };
+  recognition.onerror = event => {
+    console.error("Speech error:", event.error);
+    alert("Speech recognition error: " + event.error);
+    stopGame();
+  };
+  recognition.onend = () => waveform.style.display = "none";
+  recognition.start();
+}
+
+function stopRecognition() {
+  if (recognition) recognition.stop();
+  if (scanTimeout) clearTimeout(scanTimeout);
+  waveform.style.display = "none";
+}
+
 function launchConfetti() {
   if (window.confetti) {
     window.confetti({ particleCount: 150, spread: 60, origin: { y: 0.6 } });
@@ -154,9 +214,7 @@ function startTimer() {
     const mins = Math.floor(timeLeft / 60);
     const secs = String(timeLeft % 60).padStart(2, '0');
     timer.textContent = `⏳ ${mins}:${secs}`;
-    if (timeLeft <= 0) {
-      stopGame();
-    }
+    if (timeLeft <= 0) stopGame();
   }, 1000);
 }
 
@@ -189,4 +247,5 @@ function stopGame() {
   showSummary();
   button.disabled = true;
 }
+
 button.onclick = startGame;
